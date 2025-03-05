@@ -1,71 +1,48 @@
-# commit-gen README
 
-This is the README for your extension "commit-gen". After writing up a brief description, we recommend including the following sections.
+# Commit-Gen Extension
+
+This extension uses AI to generate commit messages for your projects. It leverages the power of Ollama, a local AI service, to provide meaningful and context-aware commit messages.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- Automatically generate commit messages based on your code changes.
+- Improve the quality and consistency of your commit history.
+- Save time and focus on coding instead of writing commit messages.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+To use this extension, you need to set up Ollama locally on your computer.
 
-## Extension Settings
+## Setup Instructions
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+1. **Install Ollama:**
+   Follow the instructions on the [Ollama website](https://ollama.com) to download and install Ollama on your local machine.
 
-For example:
+2. **Configure Ollama:**
+   Once installed, configure Ollama to work with this extension. Ensure that Ollama is running and accessible.
 
-This extension contributes the following settings:
+3. **Install the Commit-Gen Extension:**
+   Clone this repository and install the extension in your preferred code editor.
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+   ```sh
+   git clone https://github.com/yourusername/commit-gen.git
+   cd commit-gen
+   ```
 
-## Known Issues
+4. **Start Using the Extension:**
+   Open your project in your code editor and start using the Commit-Gen extension to generate commit messages.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## Usage
 
-## Release Notes
+- Make your code changes as usual.
+- When you are ready to commit, use the Commit-Gen extension to generate a commit message.
+- Review the generated message and make any necessary adjustments.
+- Commit your changes with the generated message.
 
-Users appreciate release notes as you update your extension.
+## Contributing
 
-### 1.0.0
+We welcome contributions to improve this extension. Please fork the repository and submit pull requests.
 
-Initial release of ...
+## License
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
