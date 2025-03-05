@@ -6,6 +6,12 @@
   "engines": {
     "vscode": "^1.97.0"
   },
+  "icon": "images/icon.png",
+  "publisher": "mqqqmi:3",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/v0sska/commit-gen.git"
+  },
   "categories": [
     "Other"
   ],

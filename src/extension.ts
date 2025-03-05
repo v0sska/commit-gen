@@ -7,11 +7,12 @@ function getGitExtension() {
 	return gitExtension?.getAPI(1);
 }
 
-async function getCommitMessage(diff: string): Promise<string> {
+async function getCommitMessage(diff: string, branch: string): Promise<string> {
 	const prompt = `You are an expert developer specializing in creating commit messages.
 	Provide one-sentence summary of the user's output following these rules:
 	- Simply describe the MAIN GOAL of the changes.
-	- Use Conventional Commits`
+	- Use Conventional Commits.
+	- Consider that the user is working on the "${branch}" branch and adapt the commit message accordingly.`
 
 	const ollama = new Ollama({ host: 'http://localhost:11434' });
 
@@ -46,16 +47,19 @@ export async function createCommitMessage(repo: any) {
 			vscode.commands.executeCommand('workbench.view.scm');
 			try {
 				repo.inputBox.value = '';
+				const branchName = repo.state.HEAD?.name || 'unknown-branch';
 
 				const ind = await repo.diffIndexWithHEAD();
 
-				if(ind.length === 0) {
+				if (ind.length === 0) {
 					throw new Error('No changes to commit');
 				}
 
-				const diff = await getSummaryUriDiff(repo, ind[0].uri.fsPath);
+				const diffs = await Promise.all(ind.map((file: { uri: { fsPath: string } }) => getSummaryUriDiff(repo, file.uri.fsPath)));
 
-				const commitMessage = await getCommitMessage(diff);
+				const fullDiff = diffs.join('\n');
+
+				const commitMessage = await getCommitMessage(fullDiff, branchName);
 				repo.inputBox.value = commitMessage;
 			} catch (e) {
 				if (e instanceof Error) {
@@ -65,7 +69,7 @@ export async function createCommitMessage(repo: any) {
 				}
 			}
 		}
-	)
+	);
 }
 
 export function activate(context: vscode.ExtensionContext) {
