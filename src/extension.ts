@@ -1,26 +1,87 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { Ollama } from 'ollama';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "commit-gen" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('commit-gen.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from commit-gen!');
-	});
-
-	context.subscriptions.push(disposable);
+function getGitExtension() {
+	const vscodeGit = vscode.extensions.getExtension('vscode.git');
+	const gitExtension = vscodeGit?.exports;
+	return gitExtension?.getAPI(1);
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+async function getCommitMessage(diff: string): Promise<string> {
+	const prompt = `You are an expert developer specializing in creating commit messages.
+	Provide one-sentence summary of the user's output following these rules:
+	- Simply describe the MAIN GOAL of the changes.
+	- Use Conventional Commits`
+
+	const ollama = new Ollama({ host: 'http://localhost:11434' });
+
+	try {
+		const response = await ollama.chat({
+			model: 'llama3.2',
+			messages: [
+				{ role: 'system', content: prompt },
+				{ role: 'user', content: `Here us the git diff output: ${diff}` },
+			],
+		});
+
+		return response.message.content.trim();
+	} catch (e) {
+		throw new Error(`Ollama API error: ${e}`);
+	}
+}
+
+export async function getSummaryUriDiff(repo: any, uri: string) {
+	const diff = await repo.diffIndexWithHEAD(uri);
+	return diff;
+}
+
+export async function createCommitMessage(repo: any) {
+	vscode.window.withProgress(
+		{
+			location: vscode.ProgressLocation.SourceControl,
+			cancellable: false,
+			title: 'Creating commit message',
+		},
+		async () => {
+			vscode.commands.executeCommand('workbench.view.scm');
+			try {
+				repo.inputBox.value = '';
+
+				const ind = await repo.diffIndexWithHEAD();
+
+				if(ind.length === 0) {
+					throw new Error('No changes to commit');
+				}
+
+				const diff = await getSummaryUriDiff(repo, ind[0].uri.fsPath);
+
+				const commitMessage = await getCommitMessage(diff);
+				repo.inputBox.value = commitMessage;
+			} catch (e) {
+				if (e instanceof Error) {
+					vscode.window.showErrorMessage(e.message || 'Unable to create commit message');
+				} else {
+					vscode.window.showErrorMessage('Unable to create commit message');
+				}
+			}
+		}
+	)
+}
+
+export function activate(context: vscode.ExtensionContext) {
+	const createCommitDisposable = vscode.commands.registerCommand(
+		'commit-gen.generateCommit',
+		async () => {
+			const git = getGitExtension();
+			if (!git) {
+				vscode.window.showErrorMessage('Unable to load Git extension');
+				return;
+			}
+
+			const [activeRepo] = git.repositories;
+			await createCommitMessage(activeRepo);
+		}
+	);
+
+	context.subscriptions.push(createCommitDisposable);
+}
