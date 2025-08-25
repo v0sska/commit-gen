@@ -8,11 +8,13 @@ function getGitExtension() {
 }
 
 async function getCommitMessage(diff: string, branch: string): Promise<string> {
-	const prompt = `You are an expert developer specializing in creating commit messages.
-	Provide one-sentence summary of the user's output following these rules:
-	- Simply describe the MAIN GOAL of the changes.
-	- Use Conventional Commits.
-	- Consider that the user is working on the "${branch}" branch and adapt the commit message accordingly.`
+	const prompt = `You are an expert developer specializing in creating clear and concise commit messages.
+	Generate a one-sentence summary of the user's output following these rules:
+	- Focus on the MAIN GOAL of the changes.
+	- Use Conventional Commits format (\`feat:\`, \`fix:\`, \`refactor:\`, etc.).
+	- Ensure the message is clear, descriptive, and relevant to the "${branch}" branch.
+	- Avoid unnecessary details; keep it brief but informative.`;
+
 
 	const ollama = new Ollama({ host: 'http://localhost:11434' });
 
